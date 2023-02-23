@@ -20,10 +20,10 @@ import com.springboot.blog.utils.AppConstants;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 
 @RestController
@@ -39,8 +39,8 @@ public class PostController {
     @PreAuthorize("hasRole('ADMIN')")
     // create blog post rest api
     @PostMapping
-    @Operation(summary = "Adding Post", 
-    		   parameters = {@Parameter(name = "Authorization", ref = "Authorization token",  required = true)},
+    @SecurityRequirement(name = "indrajit")
+    @Operation(summary = "Adding Post",
     		   requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(schema = @Schema(implementation = PostDto.class))),
     		   responses = {@ApiResponse(responseCode = "201", description = "Post Added Successfully", content = @Content(schema = @Schema(implementation = String.class))),
     				   		@ApiResponse(responseCode = "400", description = "Invalid Request", content = @Content(schema = @Schema(implementation = String.class)))})
@@ -72,8 +72,9 @@ public class PostController {
     @PreAuthorize("hasRole('ADMIN')")
     // update post by id rest api
     @PutMapping("/{id}")
+    @SecurityRequirement(name = "indrajit")
     @Operation(summary = "Updating Post", 
-	   parameters = {@Parameter(name = "Authorization", ref = "Authorization token",  required = true)},
+	   //parameters = {@Parameter(name = "Authorization", ref = "Authorization token",  required = true)},
 	   requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(schema = @Schema(implementation = PostDto.class))),
 	   responses = {@ApiResponse(responseCode = "201", description = "Post Updated Successfully", content = @Content(schema = @Schema(implementation = String.class))),
 			   		@ApiResponse(responseCode = "400", description = "Invalid Request", content = @Content(schema = @Schema(implementation = String.class)))})
@@ -87,6 +88,7 @@ public class PostController {
     @PreAuthorize("hasRole('ADMIN')")
     // delete post rest api
     @DeleteMapping("/{id}")
+    @SecurityRequirement(name = "indrajit")
     @Operation(summary = "Deleting Post", 
 	   parameters = {@Parameter(name = "Authorization", ref = "Authorization token",  required = true)},
 	   responses = {@ApiResponse(responseCode = "200", description = "Post Deleted Successfully", content = @Content(schema = @Schema(implementation = String.class))),
