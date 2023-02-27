@@ -1,9 +1,8 @@
 package com.springboot.blog.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -45,28 +44,33 @@ class PostServiceImplTest {
 	@InjectMocks
     private PostService postService = new PostServiceImpl(postRepository, mapper);
 	
+	private PostDto postDto;
+	private Post post;
+	private Optional<Post> postOptional;
+	
 	@BeforeEach
 	void setUp() throws Exception {
-	}
-
-	@Test
-	void testPostServiceImpl() {
-		new PostServiceImpl(postRepository, mapper);
-	}
-
-	@Test
-	void testCreatePost() {
 		//Setting PostDto Object
-		PostDto postDto = new PostDto();
+		postDto = new PostDto();
 		postDto.setTitle("Test Title 1");
 		postDto.setContent("Test Content 1");
 		postDto.setDescription("Test Description 1");
 		
 		//Setting Post Object
-		Post post = new Post();
+		post = new Post();
 		post.setTitle("Test Title 1");
 		post.setContent("Test Content 1");
 		post.setDescription("Test Description 1");
+		postOptional = Optional.of(post);
+	}
+
+	@Test
+	void testPostServiceImpl() {
+		assertNotNull(new PostServiceImpl(postRepository, mapper));
+	}
+
+	@Test
+	void testCreatePost() {
 		
 		// Mock the Actual Mapper call (mapToEntity)
 		when(mapper.map(postDto, Post.class)).thenReturn(post);
@@ -95,11 +99,6 @@ class PostServiceImplTest {
 		Page<Post> posts = new PageImpl<Post>(listOfPosts);
 		// Mock the Actual Database call (findById)
 		when(postRepository.findAll(pageable)).thenReturn(posts);
-		//Setting PostDto Object
-		PostDto postDto = new PostDto();
-		postDto.setTitle("Test Title 1");
-		postDto.setContent("Test Content 1");
-		postDto.setDescription("Test Description 1");
 		postService.getAllPosts(pageNo, pageSize, sortBy, sortDir);
 	}
 	
@@ -117,22 +116,11 @@ class PostServiceImplTest {
 		Page<Post> posts = new PageImpl<Post>(listOfPosts);
 		// Mock the Actual Database call (findById)
 		when(postRepository.findAll(pageable)).thenReturn(posts);
-		//Setting PostDto Object
-		PostDto postDto = new PostDto();
-		postDto.setTitle("Test Title 1");
-		postDto.setContent("Test Content 1");
-		postDto.setDescription("Test Description 1");
 		postService.getAllPosts(pageNo, pageSize, sortBy, sortDir);
 	}
 
 	@Test
 	void testGetPostById() {
-		//Setting Post Object
-		Post post = new Post();
-		post.setTitle("Test Title 1");
-		post.setContent("Test Content 1");
-		post.setDescription("Test Description 1");
-		Optional<Post> postOptional = Optional.of(post);
 		// Mock the Actual Database call (findById)
 		when(postRepository.findById(Mockito.anyLong())).thenReturn(postOptional);
 		
@@ -143,17 +131,6 @@ class PostServiceImplTest {
 	@Test
 	void testUpdatePost() {
 		
-		//Setting PostDto Object
-		PostDto postDto = new PostDto();
-		postDto.setTitle("Test Title 1");
-		postDto.setContent("Test Content 1");
-		postDto.setDescription("Test Description 1");
-		//Setting Post Object
-		Post post = new Post();
-		post.setTitle("Test Title 1");
-		post.setContent("Test Content 1");
-		post.setDescription("Test Description 1");
-		Optional<Post> postOptional = Optional.of(post);
 		// Mock the Actual Database call (findById)
 		when(postRepository.findById(Mockito.anyLong())).thenReturn(postOptional);
 		// Mock the Actual Database call
@@ -169,12 +146,6 @@ class PostServiceImplTest {
 	@Test
 	void testDeletePostById() {
 		
-		//Setting Post Object
-		Post post = new Post();
-		post.setTitle("Test Title 1");
-		post.setContent("Test Content 1");
-		post.setDescription("Test Description 1");
-		Optional<Post> postOptional = Optional.of(post);
 		// Mock the Actual Database call (findById)
 		when(postRepository.findById(Mockito.anyLong())).thenReturn(postOptional);
 		// Mock the Actual Database call (delete)

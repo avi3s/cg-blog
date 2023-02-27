@@ -1,44 +1,108 @@
 package com.springboot.blog.controller;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.junit.jupiter.api.BeforeEach;
+import com.springboot.blog.payload.PostDto;
+import com.springboot.blog.payload.PostResponse;
+import com.springboot.blog.service.PostService;
+import com.springboot.blog.service.impl.PostServiceImpl;
+import com.springboot.blog.utils.AppConstants;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
-class PostControllerTest {
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
+@ExtendWith(MockitoExtension.class)
+public class PostControllerTest {
 
-	@BeforeEach
-	void setUp() throws Exception {
-	}
+    @Mock
+    private PostServiceImpl postService;
 
-	@Test
-	void testPostController() {
-		fail("Not yet implemented");
-	}
+    @InjectMocks
+    private PostController postController;
 
-	@Test
-	void testCreatePost() {
-		fail("Not yet implemented");
-	}
+    @Test
+    public void createPost_shouldReturnCreatedStatus() {
+        PostDto postDto = new PostDto();
+        postDto.setTitle("Test Title");
+        postDto.setDescription("chat decripbtion");
+        postDto.setContent("Test Content");
 
-	@Test
-	void testGetAllPosts() {
-		fail("Not yet implemented");
-	}
+        when(postService.createPost(postDto)).thenReturn(postDto);
 
-	@Test
-	void testGetPostById() {
-		fail("Not yet implemented");
-	}
+        ResponseEntity<PostDto> response = postController.createPost(postDto);
 
-	@Test
-	void testUpdatePost() {
-		fail("Not yet implemented");
-	}
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(response.getBody()).isEqualTo(postDto);
+        verify(postService, times(1)).createPost(postDto);
+    }
 
-	@Test
-	void testDeletePost() {
-		fail("Not yet implemented");
-	}
+    @Test
+    public void getAllPosts_shouldReturnPostResponse() {
+        PostResponse postResponse = new PostResponse();
+        when(postService.getAllPosts(
+                Integer.parseInt(AppConstants.DEFAULT_PAGE_NUMBER),
+                Integer.parseInt(AppConstants.DEFAULT_PAGE_SIZE),
+                AppConstants.DEFAULT_SORT_BY,
+                AppConstants.DEFAULT_SORT_DIRECTION)
+        ).thenReturn(postResponse);
 
+        PostResponse response = postController.getAllPosts(
+                Integer.parseInt(AppConstants.DEFAULT_PAGE_NUMBER),
+                Integer.parseInt(AppConstants.DEFAULT_PAGE_SIZE),
+                AppConstants.DEFAULT_SORT_BY,
+                AppConstants.DEFAULT_SORT_DIRECTION
+        );
+
+        assertThat(response).isEqualTo(postResponse);
+        verify(postService, times(1)).getAllPosts(
+                Integer.parseInt(AppConstants.DEFAULT_PAGE_NUMBER),
+                Integer.parseInt(AppConstants.DEFAULT_PAGE_SIZE),
+                AppConstants.DEFAULT_SORT_BY,
+                AppConstants.DEFAULT_SORT_DIRECTION
+        );
+    }
+
+    @Test
+    public void getPostById_shouldReturnPostDto() {
+        PostDto postDto = new PostDto();
+        postDto.setId(1L);
+        when(postService.getPostById(postDto.getId())).thenReturn(postDto);
+
+        ResponseEntity<PostDto> response = postController.getPostById(postDto.getId());
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(postDto);
+        verify(postService, times(1)).getPostById(postDto.getId());
+    }
+
+    @Test
+    public void updatePost_shouldReturnUpdatedPostDto() {
+        PostDto postDto = new PostDto();
+        postDto.setId(1L);
+        postDto.setTitle("Updated Title");
+        postDto.setContent("Updated Content");
+        when(postService.updatePost(postDto, postDto.getId())).thenReturn(postDto);
+
+        ResponseEntity<PostDto> response = postController.updatePost(postDto, postDto.getId());
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(postDto);
+        verify(postService, times(1)).updatePost(postDto, postDto.getId());
+    }
+
+    @Test
+    public void deletePost_shouldReturnOkStatus() {
+        long id = 1L;
+        doNothing().when(postService).deletePostById(id);
+
+        ResponseEntity<String> response = postController.deletePost(id);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo("Post entity deleted successfully.");
+        verify(postService, times(1)).deletePostById(id);
+    }
 }
